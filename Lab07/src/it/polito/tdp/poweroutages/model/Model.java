@@ -11,17 +11,24 @@ public class Model {
 	private PowerOutageDAO podao;
 	
 	private List<Nerc> nerc;
-	private NercIdMap nercMap;
 	private List<PowerOutages> guasti;
+	
+	private NercIdMap nercMap;
 	private PowerOutagesIdMap guastiMap;
 	
 	private List<PowerOutages> soluzione;
 	
 	public Model() {
 		podao = new PowerOutageDAO();
+		
 		nercMap = new NercIdMap();
-		nerc = podao.getNercList(nercMap);
-		guastiMap = new PowerOutagesIdMap(); //non so se qui o in calcola
+		guastiMap = new PowerOutagesIdMap();
+		
+		nerc = podao.getNercList(nercMap); //memorizzo tutti i NERC presenti nel DB
+		for(Nerc n : nerc) {
+			//aggiungo riferimenti incrociati: popolo lista poList di ogni NERC in memoria
+			podao.getPowerOutagesList(guastiMap, n);
+		}
 	}
 	
 	public List<Nerc> getNercList() {
@@ -32,8 +39,7 @@ public class Model {
 
 		this.soluzione = new ArrayList<PowerOutages>();
 		List<PowerOutages> parziale = new ArrayList<PowerOutages>();
-		
-		guasti = podao.getPowerOutagesList(guastiMap, nercScelto);
+		guasti = nercScelto.getPoList();
 		
 		this.recursive(parziale,anni,ore);
 		

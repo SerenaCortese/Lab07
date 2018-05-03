@@ -6,13 +6,15 @@ import java.time.LocalDateTime;
 public class PowerOutages implements Comparable<PowerOutages>{
 	
 	private int id;
+	private int idNerc; //riferimento incrociato
 	private int customersAffected;
 	private LocalDateTime dataInizio;
 	private LocalDateTime dataFine;
 	private long durata;
 
-	public PowerOutages(int id, int customersAffected, LocalDateTime dataInizio, LocalDateTime dataFine) {
+	public PowerOutages(int id,int idNerc, int customersAffected, LocalDateTime dataInizio, LocalDateTime dataFine) {
 		this.id = id;
+		this.idNerc = idNerc;
 		this.customersAffected = customersAffected;
 		this.dataInizio = dataInizio;
 		this.dataFine = dataFine;
@@ -25,6 +27,14 @@ public class PowerOutages implements Comparable<PowerOutages>{
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public int getIdNerc() {
+		return idNerc;
+	}
+
+	public void setIdNerc(int idNerc) {
+		this.idNerc = idNerc;
 	}
 
 	public int getCustomersAffected() {
