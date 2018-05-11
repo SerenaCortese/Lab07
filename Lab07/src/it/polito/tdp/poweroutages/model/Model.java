@@ -9,28 +9,28 @@ import it.polito.tdp.poweroutages.db.PowerOutageDAO;
 public class Model {
 
 	private PowerOutageDAO podao;
-	
+
 	private List<Nerc> nerc;
 	private List<PowerOutages> guasti;
-	
+
 	private NercIdMap nercMap;
 	private PowerOutagesIdMap guastiMap;
-	
+
 	private List<PowerOutages> soluzione;
-	
+
 	public Model() {
 		podao = new PowerOutageDAO();
-		
+
 		nercMap = new NercIdMap();
 		guastiMap = new PowerOutagesIdMap();
-		
-		nerc = podao.getNercList(nercMap); //memorizzo tutti i NERC presenti nel DB
-		for(Nerc n : nerc) {
-			//aggiungo riferimenti incrociati: popolo lista poList di ogni NERC in memoria
+
+		nerc = podao.getNercList(nercMap); // memorizzo tutti i NERC presenti nel DB
+		for (Nerc n : nerc) {
+			// aggiungo riferimenti incrociati: popolo lista poList di ogni NERC in memoria
 			podao.getPowerOutagesList(guastiMap, n);
 		}
 	}
-	
+
 	public List<Nerc> getNercList() {
 		return nerc;
 	}
@@ -40,19 +40,20 @@ public class Model {
 		this.soluzione = new ArrayList<PowerOutages>();
 		List<PowerOutages> parziale = new ArrayList<PowerOutages>();
 		guasti = nercScelto.getPoList();
-		
-		this.recursive(parziale,anni,ore);
-		
+
+		this.recursive(parziale, anni, ore);
+
 		return soluzione;
 	}
-	
+
 	public void recursive(List<PowerOutages> parziale, int anni, int ore) {
 		// condizione terminazione
 		if (this.totalePersone(parziale) > this.totalePersone(soluzione)) {
 			this.soluzione = new ArrayList<PowerOutages>(parziale);
-		
+			System.out.println(soluzione) ;
+
 		}
-		
+
 		for (PowerOutages prova : guasti) {
 			if (!parziale.contains(prova)) {
 				parziale.add(prova);
@@ -67,18 +68,19 @@ public class Model {
 	}
 
 	private boolean aggiuntaValida(List<PowerOutages> parziale, int anni, int ore) {
-		
-		if(this.totaleOre(parziale) > ore) {
+
+		if (this.totaleOre(parziale) > ore) {
+			return false;
+		}
+
+		if (parziale.size() >= 2 && parziale.get(parziale.size() - 1).getDataInizio()
+				.isBefore(parziale.get(parziale.size() - 2).getDataInizio()))
+			return false;
+
+		if (controllaData(parziale.get(parziale.size() - 1).getDataInizio(), parziale.get(0).getDataInizio()) > anni) {
 			return false;
 		}
 		
-		for(PowerOutages p1: parziale) {
-			for(PowerOutages p2: parziale) {
-				if(controllaData(p1.getDataFine(),p2.getDataFine()) > anni) {
-					return false;
-				}
-			}
-		}
 		return true;
 	}
 
@@ -87,24 +89,19 @@ public class Model {
 	}
 
 	public int totalePersone(List<PowerOutages> parziale) {
-		int tot=0;
-		for(PowerOutages p: parziale) {
-			tot+= p.getCustomersAffected();
+		int tot = 0;
+		for (PowerOutages p : parziale) {
+			tot += p.getCustomersAffected();
 		}
 		return tot;
 	}
-	
-	public long totaleOre(List<PowerOutages> parziale) {
-		int tot=0;
-		for(PowerOutages p: parziale) {
-			tot+= p.getDurata();
-		}
-		return tot;
-	}
-	
-	
-	
 
-	
+	public long totaleOre(List<PowerOutages> parziale) {
+		int tot = 0;
+		for (PowerOutages p : parziale) {
+			tot += p.getDurata();
+		}
+		return tot;
+	}
 
 }
