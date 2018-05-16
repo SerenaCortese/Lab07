@@ -80,6 +80,11 @@ public class Model {
 		if (controllaData(parziale.get(parziale.size() - 1).getDataInizio(), parziale.get(0).getDataInizio()) > anni) {
 			return false;
 		}
+		//invece dell'ultimo if
+		/*
+		 * if(parziale.get(0).getDataInizio().until(parziale.get(parziale.size()-1).getDataInizio(), ChronoUnit.YEARS)>=anni)
+		 *  return false;
+		 */
 		
 		return true;
 	}
